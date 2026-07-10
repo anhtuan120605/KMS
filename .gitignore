@@ -1,0 +1,10 @@
+node_modules/
+target/
+.vscode/
+.idea/
+*.log
+.DS_Store
+frontend/dist/
+backend/target/
+.vite/
+frontend/.vite/
