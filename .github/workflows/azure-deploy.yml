@@ -54,6 +54,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'YOUR_AZURE_APP_SERVICE_NAME' # Thay thế bằng tên Web App của bạn trên Azure (Ví dụ: Duribid)
+          app-name: 'Duribid' # Tên Web App của bạn trên Azure
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: 'backend/target/*.jar'
