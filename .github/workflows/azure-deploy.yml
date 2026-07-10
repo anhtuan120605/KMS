@@ -1,0 +1,59 @@
+name: Build and Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code từ GitHub
+      - name: Checkout GitHub Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Cấu hình Node.js để build Frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      # Step 3: Cài đặt thư viện và build React Frontend
+      - name: Install and Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # Step 4: Copy sản phẩm React (dist) vào thư mục static của Spring Boot
+      - name: Bundle Frontend into Spring Boot static folder
+        run: |
+          mkdir -p backend/src/main/resources/static
+          cp -r frontend/dist/* backend/src/main/resources/static/
+
+      # Step 5: Cấu hình Java 17 để build Backend
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          
+      # Step 6: Build dự án Spring Boot thành file Jar bằng Maven
+      - name: Build Spring Boot Backend
+        run: |
+          cd backend
+          mvn clean package -DskipTests
+
+      # Step 7: Deploy file .jar đã đóng gói lên Azure App Service
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'YOUR_AZURE_APP_SERVICE_NAME' # Thay thế bằng tên Web App của bạn trên Azure (Ví dụ: Duribid)
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: 'backend/target/*.jar'
