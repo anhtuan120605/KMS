@@ -33,7 +33,7 @@ export default function HomeDashboard() {
 
   useEffect(() => {
     // Single fetch to get all items and aggregate dynamically
-    fetch('http://localhost:8080/api/knowledge')
+    fetch('/api/knowledge')
       .then(res => res.json())
       .then(data => {
         setAllData(data);

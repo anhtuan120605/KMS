@@ -20,7 +20,7 @@ export default function ReviewPage() {
   }, [location.search]);
 
   const fetchPending = () => {
-    fetch('http://localhost:8080/api/knowledge')
+    fetch('/api/knowledge')
       .then(res => res.json())
       .then(data => {
         // 1. New Submissions: assets with status "Pending"
@@ -102,7 +102,7 @@ export default function ReviewPage() {
         }
 
         // Trigger PUT request to update the parent knowledge asset
-        const response = await fetch(`http://localhost:8080/api/knowledge/${parent.id}`, {
+        const response = await fetch(`/api/knowledge/${parent.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -126,7 +126,7 @@ export default function ReviewPage() {
         }
       } else {
         // Standard submissions review
-        const response = await fetch(`http://localhost:8080/api/knowledge/${selectedItem.id}/review`, {
+        const response = await fetch(`/api/knowledge/${selectedItem.id}/review`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

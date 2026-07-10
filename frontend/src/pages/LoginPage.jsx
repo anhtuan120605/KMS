@@ -12,7 +12,7 @@ function LoginPage() {
   const [usersList, setUsersList] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/users')
+    fetch('/api/users')
       .then(res => {
         if (res.ok) return res.json();
         return [];
@@ -48,7 +48,7 @@ function LoginPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

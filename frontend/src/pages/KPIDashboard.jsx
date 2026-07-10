@@ -17,7 +17,7 @@ export default function KPIDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/knowledge')
+    fetch('/api/knowledge')
       .then(res => res.json())
       .then(data => {
         setData(data);

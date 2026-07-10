@@ -36,7 +36,7 @@ function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/users');
+      const response = await fetch('/api/users');
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
@@ -53,7 +53,7 @@ function UserManagement() {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/api/users', {
+      const response = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, role })
@@ -77,7 +77,7 @@ function UserManagement() {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: 'DELETE'
       });
       if (response.ok) {
@@ -100,7 +100,7 @@ function UserManagement() {
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${editingUser.id}`, {
+      const response = await fetch(`/api/users/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

@@ -39,7 +39,7 @@ export default function KnowledgeBase() {
     const categoryQuery = queryParams.get('category');
     const searchQuery = queryParams.get('search');
 
-    let url = 'http://localhost:8080/api/knowledge';
+    let url = '/api/knowledge';
     const params = [];
 
     if (categoryQuery && categoryQuery !== 'All') {
@@ -167,7 +167,7 @@ export default function KnowledgeBase() {
     if (!window.confirm('Are you sure you want to delete this knowledge asset?')) return;
 
     try {
-      const response = await fetch(`http://localhost:8080/api/knowledge/${id}`, {
+      const response = await fetch(`/api/knowledge/${id}`, {
         method: 'DELETE'
       });
       if (response.ok) {
@@ -207,7 +207,7 @@ export default function KnowledgeBase() {
     };
 
     try {
-      const response = await fetch(`http://localhost:8080/api/knowledge/${editingItem.id}`, {
+      const response = await fetch(`/api/knowledge/${editingItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

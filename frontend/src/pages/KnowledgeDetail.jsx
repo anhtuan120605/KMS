@@ -27,7 +27,7 @@ export default function KnowledgeDetail() {
   const [submittingEvolve, setSubmittingEvolve] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/knowledge')
+    fetch('/api/knowledge')
       .then(res => res.json())
       .then(data => {
         const found = data.find(d => d.id.toString() === id);
@@ -90,7 +90,7 @@ export default function KnowledgeDetail() {
       };
     }
 
-    fetch(`http://localhost:8080/api/knowledge/${item.id}`, {
+    fetch(`/api/knowledge/${item.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedItem)
@@ -128,7 +128,7 @@ export default function KnowledgeDetail() {
       }));
 
       // Trigger immediate async database update via Java backend proxy endpoint (to avoid Supabase PostgREST schema cache mismatch)
-      const response = await fetch(`http://localhost:8080/api/knowledge/${item.id}/apply`, {
+      const response = await fetch(`/api/knowledge/${item.id}/apply`, {
         method: 'PUT'
       });
 
@@ -159,7 +159,7 @@ export default function KnowledgeDetail() {
   const handleSendComment = () => {
     if (!newComment.trim()) return;
     
-    fetch(`http://localhost:8080/api/knowledge/${item.id}/comment`, {
+    fetch(`/api/knowledge/${item.id}/comment`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -195,7 +195,7 @@ export default function KnowledgeDetail() {
       version: 'v1.0'
     };
 
-    fetch(`http://localhost:8080/api/knowledge/${item.id}`, {
+    fetch(`/api/knowledge/${item.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(evolvedItem)
