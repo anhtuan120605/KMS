@@ -59,25 +59,49 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 function App() {
+  const normalizeUser = (val) => {
+    if (!val) return val;
+    let role = val.role;
+    let position = val.position || 'FIRMWARE';
+    
+    if (role === 'Admin' || role === 'ADMIN' || role === 'Administrator' || role === 'ADMINISTRATOR') {
+      role = 'ADMINISTRATOR';
+    } else if (role === 'Project Manager' || role === 'PROJECT_MANAGER' || role === 'manager' || role === 'MANAGER') {
+      role = 'MANAGER';
+    } else if (role === 'Senior Engineer' || role === 'SENIOR_ENGINEER' || role === 'senior' || role === 'SENIOR') {
+      role = 'SENIOR';
+    } else {
+      role = 'JUNIOR';
+    }
+    
+    if (val.username === 'pilot' || position === 'FLIGHT') {
+      position = 'FLIGHT';
+    } else if (position === 'HARDWARE') {
+      position = 'HARDWARE';
+    } else {
+      position = 'FIRMWARE';
+    }
+    
+    return {
+      ...val,
+      role,
+      position
+    };
+  };
+
   const [user, setUserState] = useState(() => {
     const saved = sessionStorage.getItem('userInfo');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && (parsed.role === 'Admin' || parsed.role === 'ADMIN')) {
-        parsed.role = 'Administrator';
-      }
-      return parsed;
+      return normalizeUser(JSON.parse(saved));
     }
     return null;
   });
 
   const setUser = (val) => {
-    if (val && (val.role === 'Admin' || val.role === 'ADMIN')) {
-      val.role = 'Administrator';
-    }
-    setUserState(val);
-    if (val) {
-      sessionStorage.setItem('userInfo', JSON.stringify(val));
+    const normalized = normalizeUser(val);
+    setUserState(normalized);
+    if (normalized) {
+      sessionStorage.setItem('userInfo', JSON.stringify(normalized));
     } else {
       sessionStorage.removeItem('userInfo');
     }
@@ -113,23 +137,23 @@ function App() {
                         <Route path="/" element={<HomeDashboard />} />
                         <Route path="/library" element={<KnowledgeBase />} />
                         <Route path="/submit" element={
-                          <ProtectedRoute allowedRoles={['Flight Test Pilot', 'Firmware Engineer', 'Hardware Engineer', 'API Test Engineer', 'Administrator']}>
+                          <ProtectedRoute allowedRoles={['JUNIOR', 'SENIOR', 'ADMINISTRATOR']}>
                             <SubmitForm />
                           </ProtectedRoute>
                         } />
                         <Route path="/review" element={
-                          <ProtectedRoute allowedRoles={['Senior Engineer', 'Administrator']}>
+                          <ProtectedRoute allowedRoles={['SENIOR', 'ADMINISTRATOR']}>
                             <ReviewPage />
                           </ProtectedRoute>
                         } />
                         <Route path="/kpi" element={
-                          <ProtectedRoute allowedRoles={['Project Manager', 'Administrator']}>
+                          <ProtectedRoute allowedRoles={['MANAGER', 'ADMINISTRATOR']}>
                             <KPIDashboard />
                           </ProtectedRoute>
                         } />
                         <Route path="/item/:id" element={<KnowledgeDetail />} />
                         <Route path="/users" element={
-                          <ProtectedRoute allowedRoles={['Administrator']}>
+                          <ProtectedRoute allowedRoles={['ADMINISTRATOR']}>
                             <UserManagement />
                           </ProtectedRoute>
                         } />

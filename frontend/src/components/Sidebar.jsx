@@ -25,25 +25,25 @@ export default function Sidebar() {
         <NavItem to="/library" icon={<BookOpen size={20} />} label={t('library')} />
         
         {/* Submit Case conditional rendering based on specific roles */}
-        {role === 'Flight Test Pilot' && (
+        {(role === 'JUNIOR' || role === 'SENIOR') && user?.position === 'FLIGHT' && (
           <NavItem to="/submit" icon={<Plus size={20} />} label={t('submitFlightIncident')} />
         )}
         
-        {['Firmware Engineer', 'Hardware Engineer', 'API Test Engineer'].includes(role) && (
+        {(role === 'JUNIOR' || role === 'SENIOR') && (user?.position === 'FIRMWARE' || user?.position === 'HARDWARE') && (
           <NavItem to="/submit" icon={<Plus size={20} />} label={t('submitEngineeringCase')} />
         )}
 
-        {role === 'Administrator' && (
+        {role === 'ADMINISTRATOR' && (
           <NavItem to="/submit" icon={<Plus size={20} />} label={t('submitCase')} />
         )}
         
         {/* Expert Review Portal */}
-        {['Senior Engineer', 'Administrator'].includes(role) && (
+        {(role === 'SENIOR' || role === 'ADMINISTRATOR') && (
           <NavItem to="/review" icon={<CheckSquare size={20} />} label={t('expertReviewPortal')} />
         )}
         
         {/* User Account Management */}
-        {role === 'Administrator' && (
+        {role === 'ADMINISTRATOR' && (
           <NavItem to="/users" icon={<Users size={20} />} label={t('userAccountManagement')} />
         )}
       </nav>

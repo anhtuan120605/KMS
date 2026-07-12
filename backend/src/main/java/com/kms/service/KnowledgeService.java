@@ -96,6 +96,8 @@ public class KnowledgeService {
             if (assetDetails.getStatus() != null) asset.setStatus(assetDetails.getStatus());
             if (assetDetails.getVersion() != null) asset.setVersion(assetDetails.getVersion());
             if (assetDetails.getHelpfulCount() != null) asset.setHelpfulCount(assetDetails.getHelpfulCount());
+            if (assetDetails.getAuthorRole() != null) asset.setAuthorRole(assetDetails.getAuthorRole());
+            if (assetDetails.getAuthorPosition() != null) asset.setAuthorPosition(assetDetails.getAuthorPosition());
             if (assetDetails.getProposedUpdates() != null) asset.setProposedUpdates(assetDetails.getProposedUpdates());
             if (assetDetails.getApprovedUpdates() != null) asset.setApprovedUpdates(assetDetails.getApprovedUpdates());
             return repository.save(asset);

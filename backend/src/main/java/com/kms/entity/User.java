@@ -10,6 +10,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -26,5 +29,9 @@ public class User {
     
     private String password; // Will be hashed with BCrypt
     
-    private String role; // e.g. "Admin", "Reviewer", "Contributor", "End User"
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    
+    @Enumerated(EnumType.STRING)
+    private Position position;
 }

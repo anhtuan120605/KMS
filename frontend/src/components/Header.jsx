@@ -3,6 +3,7 @@ import { Bell, User, LogOut } from 'lucide-react';
 import { useAuth, LanguageContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../translations';
+import RoleSwitcher from './RoleSwitcher';
 
 function Header() {
   const { user, logout } = useAuth();
@@ -21,6 +22,9 @@ function Header() {
       <div className="flex-1"></div>
 
       <div className="flex items-center gap-6">
+        {/* Role Switcher */}
+        <RoleSwitcher />
+
         {/* Language Toggler */}
         <button 
           onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
@@ -37,7 +41,7 @@ function Header() {
         <div className="flex items-center gap-3 pl-6 border-l border-white/10">
           <div className="text-right">
             <p className="text-sm font-medium text-white">{user?.username || 'User'}</p>
-            <p className="text-xs text-primary">{user?.role || 'Guest'}</p>
+            <p className="text-xs text-primary">{user?.role ? `${user.role} - ${user.position || 'FIRMWARE'}` : 'Guest'}</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent p-0.5">
             <div className="w-full h-full bg-surface rounded-full flex items-center justify-center">

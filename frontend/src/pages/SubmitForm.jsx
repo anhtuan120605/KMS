@@ -32,7 +32,7 @@ export default function SubmitForm() {
   // 2. Engineer form states
   const [formData, setFormData] = useState({
     title: '',
-    category: role === 'Flight Test Pilot' ? 'Troubleshooting Cases' : 'SOP & Checklist',
+    category: user?.position === 'FLIGHT' ? 'Troubleshooting Cases' : 'SOP & Checklist',
     knowledgeType: 'Explicit',
     tags: '',
     summary: '',
@@ -99,7 +99,8 @@ export default function SubmitForm() {
     const finalAttachmentUrl = finalAttachmentUrls.join(',');
     setUploadProgress('Saving to database...');
 
-    const isAutoApproved = ['Senior Engineer', 'Administrator'].includes(role);
+    const isAutoApproved = ['SENIOR', 'ADMINISTRATOR'].includes(role);
+    const isPilot = user?.position === 'FLIGHT';
     
     let payload = {};
 
@@ -115,7 +116,9 @@ export default function SubmitForm() {
         title: formattedTitle,
         category: 'Maintenance Logs',
         knowledgeType: 'Explicit',
-        author: `${user?.username || 'Anonymous'}|${role || ''}`,
+        author: user?.username || 'Anonymous',
+        authorRole: user?.role || 'JUNIOR',
+        authorPosition: user?.position || 'FLIGHT',
         reviewer: isAutoApproved ? user?.username : null,
         tags: ['Flight Log', droneAirframe, flightLocation].filter(Boolean),
         summary: flightBehavior || 'Submitted flight telemetry log.',
@@ -129,15 +132,14 @@ export default function SubmitForm() {
     } else {
       // Map Engineer fields to KnowledgeAsset DB columns
       const tagList = formData.tags.split(',').map(t => t.trim()).filter(Boolean);
-      if (role === 'API Test Engineer' && formData.jiraKey) {
-        tagList.push(`Jira: ${formData.jiraKey}`);
-      }
 
       payload = {
         title: formData.title,
         category: formData.category,
         knowledgeType: formData.knowledgeType,
-        author: `${user?.username || 'Anonymous'}|${role || ''}`,
+        author: user?.username || 'Anonymous',
+        authorRole: user?.role || 'JUNIOR',
+        authorPosition: user?.position || 'FIRMWARE',
         reviewer: formData.category === 'Troubleshooting Cases' ? null : (isAutoApproved ? user?.username : null),
         tags: tagList,
         summary: formData.summary,
@@ -150,7 +152,7 @@ export default function SubmitForm() {
       };
     }
 
-    try {
+    const isPilotMockVal = isPilot;try {
       const res = await fetch('/api/knowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -304,7 +306,7 @@ export default function SubmitForm() {
 
               <div className="space-y-2 md:col-span-2">
                 <label className="text-sm font-medium text-slate-300">{t('categoryLabel')}</label>
-                <select name="category" value={formData.category} onChange={handleChange} disabled={role === 'Flight Test Pilot'} className="w-full bg-background border border-white/10 rounded-lg px-4 py-2.5 focus:border-primary outline-none transition-colors appearance-none text-white disabled:opacity-70 disabled:cursor-not-allowed">
+                <select name="category" value={formData.category} onChange={handleChange} disabled={user?.position === 'FLIGHT'} className="w-full bg-background border border-white/10 rounded-lg px-4 py-2.5 focus:border-primary outline-none transition-colors appearance-none text-white disabled:opacity-70 disabled:cursor-not-allowed">
                   <option value="SOP & Checklist">{t('SOP & Checklist')}</option>
                   <option value="Maintenance Logs">{t('Maintenance Logs')}</option>
                   <option value="Troubleshooting Cases">{t('Troubleshooting Cases')}</option>
@@ -346,6 +348,16 @@ export default function SubmitForm() {
                   placeholder={formData.category === 'Troubleshooting Cases' ? t('currentFaultPlaceholder') : t('summaryPlaceholder')}
                 ></textarea>
               </div>
+
+              {formData.category === 'Troubleshooting Cases' && (
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-slate-300">Trạng thái hồ sơ / Status</label>
+                  <div className="w-full bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-2.5 text-amber-400 font-mono text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse inline-block"></span>
+                    <span>{language === 'vi' ? 'Đang điều tra (Investigating)' : 'Investigating'}</span>
+                  </div>
+                </div>
+              )}
 
               {formData.category === 'Troubleshooting Cases' && (
                 <div className="space-y-2 md:col-span-2 border border-amber-500/30 bg-amber-500/5 p-4 rounded-xl text-amber-400 text-sm animate-in fade-in duration-300">

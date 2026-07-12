@@ -11,24 +11,18 @@ function UserManagement() {
   // Create Form states
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Firmware Engineer');
+  const [role, setRole] = useState('JUNIOR');
+  const [position, setPosition] = useState('FIRMWARE');
 
   // Edit Form states
   const [editingUser, setEditingUser] = useState(null);
   const [editUsername, setEditUsername] = useState('');
   const [editPassword, setEditPassword] = useState('');
   const [editRole, setEditRole] = useState('');
+  const [editPosition, setEditPosition] = useState('');
 
-  const roles = [
-    'Administrator',
-    'Project Manager',
-    'Senior Engineer',
-    'Firmware Engineer',
-    'Hardware Engineer',
-    'API Test Engineer',
-    'Flight Test Pilot',
-    'New Engineer'
-  ];
+  const roles = ['JUNIOR', 'SENIOR', 'MANAGER', 'ADMINISTRATOR'];
+  const positions = ['FIRMWARE', 'HARDWARE', 'FLIGHT'];
 
   useEffect(() => {
     fetchUsers();
@@ -56,13 +50,14 @@ function UserManagement() {
       const response = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role })
+        body: JSON.stringify({ username, password, role, position })
       });
 
       if (response.ok) {
         setUsername('');
         setPassword('');
-        setRole('Firmware Engineer');
+        setRole('JUNIOR');
+        setPosition('FIRMWARE');
         fetchUsers();
       } else {
         const errData = await response.json();
@@ -93,7 +88,8 @@ function UserManagement() {
   const openEditModal = (u) => {
     setEditingUser(u);
     setEditUsername(u.username);
-    setEditRole(u.role);
+    setEditRole(u.role || 'JUNIOR');
+    setEditPosition(u.position || 'FIRMWARE');
     setEditPassword('');
   };
 
@@ -106,6 +102,7 @@ function UserManagement() {
         body: JSON.stringify({ 
           username: editUsername, 
           role: editRole,
+          position: editPosition,
           password: editPassword 
         })
       });
@@ -122,7 +119,7 @@ function UserManagement() {
     }
   };
 
-  if (user?.role !== 'Administrator') {
+  if (user?.role !== 'ADMINISTRATOR' && user?.role !== 'Administrator') {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-xl text-red-400">Access Denied. Administrators only.</p>
@@ -180,6 +177,18 @@ function UserManagement() {
                 ))}
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-1">Position</label>
+              <select
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
+                className="w-full bg-background border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-primary/50"
+              >
+                {positions.map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
             <button
               type="submit"
               className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-2 px-4 rounded-xl transition-colors mt-4"
@@ -214,6 +223,7 @@ function UserManagement() {
                 <tr className="text-slate-400 text-sm border-b border-white/5">
                   <th className="pb-3 font-medium">Username</th>
                   <th className="pb-3 font-medium">Role</th>
+                  <th className="pb-3 font-medium">Position</th>
                   <th className="pb-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -235,12 +245,18 @@ function UserManagement() {
                       </td>
                       <td className="py-4">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${
-                          u.role === 'Admin' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                          u.role === 'Reviewer' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                          u.role === 'ADMINISTRATOR' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                          u.role === 'SENIOR' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                          u.role === 'MANAGER' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                           'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                         }`}>
-                          {u.role === 'Admin' && <Shield className="w-3 h-3" />}
+                          {u.role === 'ADMINISTRATOR' && <Shield className="w-3 h-3" />}
                           {u.role}
+                        </span>
+                      </td>
+                      <td className="py-4">
+                        <span className="font-mono text-xs text-slate-300">
+                          {u.position || 'FIRMWARE'}
                         </span>
                       </td>
                       <td className="py-4 text-right">
@@ -304,6 +320,18 @@ function UserManagement() {
                 >
                   {roles.map(r => (
                     <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Position</label>
+                <select
+                  value={editPosition}
+                  onChange={(e) => setEditPosition(e.target.value)}
+                  className="w-full bg-background border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-primary/50"
+                >
+                  {positions.map(p => (
+                    <option key={p} value={p}>{p}</option>
                   ))}
                 </select>
               </div>

@@ -64,9 +64,8 @@ export default function KnowledgeDetail() {
     if (!observations.trim()) return;
     setSubmittingUpdate(true);
 
-    // SOP & Checklist and Training & Regulation require senior/admin review
-    const REVIEW_REQUIRED_TYPES = ['SOP & Checklist', 'Training & Regulation'];
-    const requiresReview = REVIEW_REQUIRED_TYPES.includes(item.category);
+    // All updates are auto-approved directly without any manual review/approval queue
+    const requiresReview = false;
 
     const timestamp = new Date().toISOString();
     let updatedItem = { ...item };
@@ -218,9 +217,10 @@ export default function KnowledgeDetail() {
     return <div className="p-8 text-center text-slate-400">Loading or not found...</div>;
   }
 
-  const [authorName, authorRole] = (item.author || '').split('|');
-  const authorUsername = (item.author || '').split('|')[0];
-  const canResolve = user?.username === authorUsername || ['Senior Engineer', 'Project Manager'].includes(user?.role);
+  const authorName = item.author || 'Anonymous';
+  const authorRole = item.authorRole || 'JUNIOR';
+  const authorUsername = item.author || 'Anonymous';
+  const canResolve = user?.username === authorUsername || ['SENIOR', 'MANAGER', 'ADMINISTRATOR'].includes(user?.role);
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4">
@@ -296,7 +296,7 @@ export default function KnowledgeDetail() {
             {authorRole && (
               <div className="flex items-center gap-2">
                 <Users size={16} className="text-slate-500" />
-                <span>{t('role')}: <strong className="text-slate-200">{t(authorRole)}</strong></span>
+                <span>{t('role')}: <strong className="text-slate-200">{t(authorRole)} - {item.authorPosition || 'FIRMWARE'}</strong></span>
               </div>
             )}
             <div className="flex items-center gap-2">
@@ -458,47 +458,7 @@ export default function KnowledgeDetail() {
               </section>
             )}
 
-            {/* Pending Contributions (visible to contributor + Admin only) */}
-            {item.status !== 'Investigating' && item.proposedUpdates && item.proposedUpdates.length > 0 && (() => {
-              const visibleProposals = item.proposedUpdates
-                .map((str, idx) => {
-                  const [authorMeta, content, timestamp] = str.split('||');
-                  const author = authorMeta ? authorMeta.split('|')[0] : '';
-                  return { author, content, timestamp, idx };
-                })
-                .filter(p => user.role === 'Administrator' || user.role === 'Senior Engineer' || p.author === user.username);
 
-              if (visibleProposals.length === 0) return null;
-
-              return (
-                <section className="mt-8 pt-6 border-t border-white/10 space-y-4 animate-in fade-in duration-200">
-                  <h2 className="text-sm font-semibold text-amber-400/80 flex items-center gap-2">
-                    <MessageSquare size={16} />
-                    {t('pendingRefinements')} ({visibleProposals.length})
-                  </h2>
-                  <div className="space-y-3">
-                    {visibleProposals.map((p, index) => (
-                      <div key={index} className="bg-amber-500/5 border border-amber-500/15 rounded-xl p-4 space-y-2">
-                        <div className="flex justify-between items-center text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-200">{p.author}</span>
-                            <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] px-1.5 py-0.5 rounded font-mono">
-                              {t('pendingReview')}
-                            </span>
-                          </div>
-                          <span className="text-slate-500 font-mono text-[10px]">
-                            {new Date(p.timestamp).toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line bg-black/20 p-3 rounded-lg border border-amber-500/10 font-mono">
-                          {p.content}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              );
-            })()}
 
             {/* Approved Field Refinements Feed (Comments style) */}
             {item.status !== 'Investigating' && item.approvedUpdates && item.approvedUpdates.length > 0 && (

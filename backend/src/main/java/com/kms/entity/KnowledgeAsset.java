@@ -37,6 +37,13 @@ public class KnowledgeAsset {
     private String status = "Pending";
     
     private String author;
+    
+    @Enumerated(EnumType.STRING)
+    private Role authorRole;
+
+    @Enumerated(EnumType.STRING)
+    private Position authorPosition;
+    
     private String reviewer;
     
     @Column(columnDefinition = "TEXT")

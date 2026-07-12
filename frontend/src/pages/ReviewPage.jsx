@@ -150,7 +150,7 @@ export default function ReviewPage() {
     }
   };
 
-  if (!['Senior Engineer', 'Administrator'].includes(role)) {
+  if (!['SENIOR', 'ADMINISTRATOR', 'Senior Engineer', 'Administrator'].includes(role)) {
     return <div className="p-8 text-center text-slate-400">Access Denied. You need Senior Engineer or Administrator privileges.</div>;
   }
 

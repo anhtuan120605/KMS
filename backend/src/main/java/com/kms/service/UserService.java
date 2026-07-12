@@ -47,8 +47,11 @@ public class UserService {
             if (userDetails.getUsername() != null && !userDetails.getUsername().isEmpty()) {
                 existingUser.setUsername(userDetails.getUsername());
             }
-            if (userDetails.getRole() != null && !userDetails.getRole().isEmpty()) {
+            if (userDetails.getRole() != null) {
                 existingUser.setRole(userDetails.getRole());
+            }
+            if (userDetails.getPosition() != null) {
+                existingUser.setPosition(userDetails.getPosition());
             }
             if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
                 String hashedPassword = BCrypt.hashpw(userDetails.getPassword(), BCrypt.gensalt());

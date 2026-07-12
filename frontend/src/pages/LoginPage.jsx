@@ -19,10 +19,10 @@ function LoginPage() {
       })
       .then(data => {
         const seededList = [
-          { username: 'admin', role: 'Administrator' },
-          { username: 'senior', role: 'Senior Engineer' },
-          { username: 'manager', role: 'Project Manager' },
-          { username: 'pilot', role: 'Flight Test Pilot' }
+          { username: 'admin', role: 'ADMINISTRATOR', position: 'FIRMWARE' },
+          { username: 'senior', role: 'SENIOR', position: 'FIRMWARE' },
+          { username: 'manager', role: 'MANAGER', position: 'FIRMWARE' },
+          { username: 'pilot', role: 'JUNIOR', position: 'FLIGHT' }
         ];
         
         const combined = [...data];
@@ -35,10 +35,10 @@ function LoginPage() {
       })
       .catch(() => {
         setUsersList([
-          { username: 'admin', role: 'Administrator' },
-          { username: 'senior', role: 'Senior Engineer' },
-          { username: 'manager', role: 'Project Manager' },
-          { username: 'pilot', role: 'Flight Test Pilot' }
+          { username: 'admin', role: 'ADMINISTRATOR', position: 'FIRMWARE' },
+          { username: 'senior', role: 'SENIOR', position: 'FIRMWARE' },
+          { username: 'manager', role: 'MANAGER', position: 'FIRMWARE' },
+          { username: 'pilot', role: 'JUNIOR', position: 'FLIGHT' }
         ]);
       });
   }, []);
@@ -58,7 +58,8 @@ function LoginPage() {
         const userObj = await response.json();
         setUser({
           username: userObj.username,
-          role: userObj.role
+          role: userObj.role,
+          position: userObj.position
         });
         navigate('/'); // Redirect to dashboard
       } else {
@@ -73,7 +74,8 @@ function LoginPage() {
   const handleQuickLogin = (selectedUser) => {
     setUser({
       username: selectedUser.username,
-      role: selectedUser.role
+      role: selectedUser.role,
+      position: selectedUser.position
     });
     navigate('/');
   };
@@ -159,7 +161,7 @@ function LoginPage() {
                 >
                   <div>
                     <p className="font-semibold text-white group-hover:text-primary transition-colors text-sm">{u.username}</p>
-                    <p className="text-xs text-slate-400">{u.role}</p>
+                    <p className="text-xs text-slate-400">{u.role} - {u.position || 'FIRMWARE'}</p>
                   </div>
                   <span className="text-[10px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full font-mono uppercase">
                     Quick Access

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Filter, FileText, Search, Edit2, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Filter, FileText, Search, Edit2, Trash2, X, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 import { useAuth, LanguageContext } from '../App';
 import { translations } from '../translations';
 
@@ -38,6 +38,7 @@ export default function KnowledgeBase() {
     const queryParams = new URLSearchParams(location.search);
     const categoryQuery = queryParams.get('category');
     const searchQuery = queryParams.get('search');
+    const statusQuery = queryParams.get('status');
 
     let url = '/api/knowledge';
     const params = [];
@@ -48,10 +49,13 @@ export default function KnowledgeBase() {
     if (searchQuery) {
       params.push(`search=${encodeURIComponent(searchQuery)}`);
     }
-
-    // Automatically append status=Approved parameter for regular engineer/pilot roles to safeguard data governance
-    if (!['Senior Engineer', 'Project Manager', 'Administrator'].includes(user?.role)) {
-      params.push('status=Approved');
+    if (statusQuery) {
+      params.push(`status=${encodeURIComponent(statusQuery)}`);
+    } else {
+      // Automatically append status=Approved parameter for regular engineer/pilot roles to safeguard data governance
+      if (!['SENIOR', 'MANAGER', 'ADMINISTRATOR', 'Senior Engineer', 'Project Manager', 'Administrator'].includes(user?.role)) {
+        params.push('status=Approved');
+      }
     }
 
     if (params.length > 0) {
@@ -61,12 +65,12 @@ export default function KnowledgeBase() {
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        if (user?.role === 'Administrator') {
+        if (['ADMINISTRATOR', 'MANAGER', 'SENIOR', 'Administrator', 'Project Manager', 'Senior Engineer'].includes(user?.role)) {
           setItems(data);
         } else {
           // Users see Approved/Investigating assets OR items they authored (Pending, Rejected)
           const visibleData = data.filter(item => {
-            const authorName = (item.author || '').split('|')[0];
+            const authorName = item.author || '';
             return item.status === 'Approved' || item.status === 'Investigating' || authorName === user?.username;
           });
           setItems(visibleData);
@@ -131,8 +135,12 @@ export default function KnowledgeBase() {
   ];
   const queryParams = new URLSearchParams(location.search);
   const showBookmarksOnly = queryParams.get('bookmarks') === 'true';
+  const positionFilter = queryParams.get('position');
 
   const filteredItems = items.filter(item => {
+    if (positionFilter && item.authorPosition !== positionFilter) {
+      return false;
+    }
     if (searchVal.trim()) {
       const cleanedKeyword = searchVal.trim().toLowerCase();
       const matchesSearch =
@@ -149,7 +157,7 @@ export default function KnowledgeBase() {
       return bookmarks.includes(item.id.toString());
     }
     if (mySubmissionsOnly) {
-      const authorName = (item.author || '').split('|')[0];
+      const authorName = item.author || '';
       return authorName === user?.username;
     }
     return true;
@@ -277,7 +285,7 @@ export default function KnowledgeBase() {
         <div className="flex flex-wrap gap-3 items-center pt-4 border-t border-white/5">
           <div className="flex items-center gap-2 text-slate-400 text-sm font-medium mr-2">
             <Filter size={16} className="text-primary" />
-            <span>{language === 'vi' ? 'Bộ lọc:' : 'Filters:'}</span>
+            <span>{language === 'vi' ? 'Bộ lọc danh mục:' : 'Category Filters:'}</span>
           </div>
           {categories.map(cat => {
             const isSelected = filter === cat;
@@ -295,12 +303,43 @@ export default function KnowledgeBase() {
                   }
                   navigate({ search: queryParams.toString() });
                 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${isSelected
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${isSelected
                   ? 'bg-primary text-white shadow-[0_0_10px_rgba(59,130,246,0.5)] border-primary'
                   : 'bg-white/5 border-white/5 text-slate-300 hover:bg-white/10'
                   }`}
               >
                 {t(cat)}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Position Filter Row */}
+        <div className="flex flex-wrap gap-3 items-center pt-3 mt-2 border-t border-white/5">
+          <div className="flex items-center gap-2 text-slate-400 text-sm font-medium mr-2">
+            <Users size={16} className="text-pink-500" />
+            <span>{language === 'vi' ? 'Chuyên môn:' : 'Domain:'}</span>
+          </div>
+          {['FIRMWARE', 'HARDWARE', 'FLIGHT'].map(pos => {
+            const isSelected = positionFilter === pos;
+            return (
+              <button
+                key={pos}
+                onClick={() => {
+                  const queryParams = new URLSearchParams(location.search);
+                  if (isSelected) {
+                    queryParams.delete('position');
+                  } else {
+                    queryParams.set('position', pos);
+                  }
+                  navigate({ search: queryParams.toString() });
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${isSelected
+                  ? 'bg-pink-500 text-white shadow-[0_0_10px_rgba(236,72,153,0.5)] border-pink-500'
+                  : 'bg-white/5 border-white/5 text-slate-300 hover:bg-white/10'
+                  }`}
+              >
+                {pos}
               </button>
             );
           })}
@@ -322,7 +361,7 @@ export default function KnowledgeBase() {
                   <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md">{t(item.category)}</span>
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleDateString()}</span>
-                    {(user?.role === 'Administrator' || (item.author || '').split('|')[0] === user?.username) && item.status !== 'Approved' && (
+                    {(['ADMINISTRATOR', 'Administrator'].includes(user?.role) || (item.author || '').split('|')[0] === user?.username) && item.status !== 'Approved' && (
                       <span className={`text-xs font-bold px-2 py-0.5 rounded ${item.status === 'Pending' ? 'text-yellow-500 bg-yellow-500/10' : 'text-red-500 bg-red-500/10'
                         }`}>{t(item.status)}</span>
                     )}
@@ -354,7 +393,7 @@ export default function KnowledgeBase() {
               </Link>
 
               {/* Actions Overlay: Admin OR the original author */}
-              {(user?.role === 'Administrator' || (item.author || '').split('|')[0] === user?.username) && (
+              {(['ADMINISTRATOR', 'Administrator'].includes(user?.role) || (item.author || '').split('|')[0] === user?.username) && (
                 <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={(e) => openEditModal(e, item)}
