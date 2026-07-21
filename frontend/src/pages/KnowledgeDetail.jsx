@@ -220,7 +220,8 @@ export default function KnowledgeDetail() {
   const authorName = item.author || 'Anonymous';
   const authorRole = item.authorRole || 'JUNIOR';
   const authorUsername = item.author || 'Anonymous';
-  const canResolve = user?.username === authorUsername || ['SENIOR', 'MANAGER', 'ADMINISTRATOR'].includes(user?.role);
+  const isSeniorOrAbove = ['SENIOR', 'MANAGER', 'ADMINISTRATOR', 'Senior Engineer', 'Project Manager', 'Administrator'].includes(user?.role);
+  const canResolve = isSeniorOrAbove;
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4">
@@ -232,16 +233,32 @@ export default function KnowledgeDetail() {
         <ArrowLeft size={16} /> {t('back')}
       </button>
 
-      <div className="glass p-8 rounded-3xl relative overflow-hidden">
+      <div className={`glass p-8 rounded-3xl relative overflow-hidden ${
+        item.category === 'Troubleshooting Cases'
+          ? 'border-2 border-amber-500/50 bg-amber-950/10 shadow-[0_0_30px_rgba(245,158,11,0.1)]'
+          : ''
+      }`}>
         {/* Decorator Background */}
-        <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className={`absolute top-[-50px] right-[-50px] w-64 h-64 rounded-full blur-3xl pointer-events-none ${
+          item.category === 'Troubleshooting Cases' ? 'bg-amber-500/10' : 'bg-primary/10'
+        }`}></div>
 
         <div className="relative z-10">
           <div className="flex justify-between items-start mb-6">
-            <div className="flex gap-2">
-              <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold border border-primary/30">
+            <div className="flex gap-2 items-center flex-wrap">
+              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                item.category === 'Troubleshooting Cases'
+                  ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                  : 'bg-primary/20 text-primary border-primary/30'
+              }`}>
                 {t(item.category)}
               </span>
+              {item.category === 'Troubleshooting Cases' && (
+                <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-xs font-bold border border-amber-500/40 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                  {language === 'vi' ? 'Đang thảo luận' : 'Under Discussion'}
+                </span>
+              )}
               <span className="bg-white/5 text-slate-300 px-3 py-1 rounded-full text-xs font-medium border border-white/10">
                 v{item.version || '1.0'}
               </span>

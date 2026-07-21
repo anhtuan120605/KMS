@@ -372,12 +372,25 @@ export default function HomeDashboard() {
                 <p className="text-slate-400 italic">{t('noRecentActivity')}</p>
               ) : (
                 recentActivity.map((item) => (
-                  <div key={item.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-colors flex justify-between items-center group">
+                  <div key={item.id} className={`p-4 rounded-xl transition-colors flex justify-between items-center group ${
+                    item.category === 'Troubleshooting Cases'
+                      ? 'bg-amber-950/20 border border-amber-500/40 hover:border-amber-400'
+                      : 'bg-white/5 border border-white/5 hover:border-primary/30'
+                  }`}>
                     <div>
-                      <h3 className="font-medium text-slate-200 group-hover:text-primary transition-colors">
+                      <h3 className={`font-medium transition-colors ${item.category === 'Troubleshooting Cases' ? 'text-slate-200 group-hover:text-amber-400' : 'text-slate-200 group-hover:text-primary'}`}>
                         <Link to={`/item/${item.id}`}>{item.title}</Link>
                       </h3>
-                      <p className="text-sm text-slate-400 mt-1">{t(item.category)} • {item.knowledgeType}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className={`text-xs ${item.category === 'Troubleshooting Cases' ? 'text-amber-400 font-semibold' : 'text-slate-400'}`}>{t(item.category)}</span>
+                        {item.category === 'Troubleshooting Cases' && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded text-amber-400 bg-amber-500/20 border border-amber-500/40 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                            {language === 'vi' ? 'Đang thảo luận' : 'Under Discussion'}
+                          </span>
+                        )}
+                        <span className="text-sm text-slate-400">• {item.knowledgeType}</span>
+                      </div>
                       {item.tags && item.tags.length > 0 && (
                         <div className="flex gap-1.5 flex-wrap mt-2">
                           {item.tags.map((tag, tagIdx) => (
@@ -421,12 +434,25 @@ export default function HomeDashboard() {
               </h2>
               <div className="space-y-4">
                 {mySubmissions.map((item) => (
-                  <div key={item.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-colors flex justify-between items-center group">
+                  <div key={item.id} className={`p-4 rounded-xl transition-colors flex justify-between items-center group ${
+                    item.category === 'Troubleshooting Cases'
+                      ? 'bg-amber-950/20 border border-amber-500/40 hover:border-amber-400'
+                      : 'bg-white/5 border border-white/5 hover:border-primary/30'
+                  }`}>
                     <div>
-                      <h3 className="font-medium text-slate-200 group-hover:text-primary transition-colors">
+                      <h3 className={`font-medium transition-colors ${item.category === 'Troubleshooting Cases' ? 'text-slate-200 group-hover:text-amber-400' : 'text-slate-200 group-hover:text-primary'}`}>
                         <Link to={`/item/${item.id}`}>{item.title}</Link>
                       </h3>
-                      <p className="text-sm text-slate-400 mt-1">{t(item.category)} • {item.knowledgeType}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className={`text-xs ${item.category === 'Troubleshooting Cases' ? 'text-amber-400 font-semibold' : 'text-slate-400'}`}>{t(item.category)}</span>
+                        {item.category === 'Troubleshooting Cases' && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded text-amber-400 bg-amber-500/20 border border-amber-500/40 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                            {language === 'vi' ? 'Đang thảo luận' : 'Under Discussion'}
+                          </span>
+                        )}
+                        <span className="text-sm text-slate-400">• {item.knowledgeType}</span>
+                      </div>
                       {item.tags && item.tags.length > 0 && (
                         <div className="flex gap-1.5 flex-wrap mt-2">
                           {item.tags.map((tag, tagIdx) => (

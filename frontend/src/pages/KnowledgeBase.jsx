@@ -354,21 +354,44 @@ export default function KnowledgeBase() {
             <p>{t('noRecentActivity')}</p>
           </div>
         ) : (
-          paginatedItems.map(item => (
-            <div key={item.id} className="relative group">
-              <Link to={`/item/${item.id}`} className="glass p-6 rounded-2xl hover:border-primary/50 transition-all block h-full flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md">{t(item.category)}</span>
-                  <div className="flex flex-col items-end gap-1">
-                    <span className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleDateString()}</span>
-                    {(['ADMINISTRATOR', 'Administrator'].includes(user?.role) || (item.author || '').split('|')[0] === user?.username) && item.status !== 'Approved' && (
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded ${item.status === 'Pending' ? 'text-yellow-500 bg-yellow-500/10' : 'text-red-500 bg-red-500/10'
-                        }`}>{t(item.status)}</span>
-                    )}
+          paginatedItems.map(item => {
+            const isTroubleshooting = item.category === 'Troubleshooting Cases';
+            return (
+              <div key={item.id} className="relative group">
+                <Link 
+                  to={`/item/${item.id}`} 
+                  className={`glass p-6 rounded-2xl transition-all block h-full flex flex-col ${
+                    isTroubleshooting 
+                      ? 'bg-amber-950/20 border-2 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.12)] hover:border-amber-400' 
+                      : 'hover:border-primary/50'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-4 gap-2">
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${
+                        isTroubleshooting
+                          ? 'text-amber-400 bg-amber-500/20 border border-amber-500/40'
+                          : 'text-primary bg-primary/10'
+                      }`}>
+                        {t(item.category)}
+                      </span>
+                      {isTroubleshooting && (
+                        <span className="text-xs font-bold px-2 py-0.5 rounded-md text-amber-400 bg-amber-500/20 border border-amber-500/40 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                          {language === 'vi' ? 'Đang thảo luận' : 'Under Discussion'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleDateString()}</span>
+                      {(['ADMINISTRATOR', 'Administrator'].includes(user?.role) || (item.author || '').split('|')[0] === user?.username) && item.status !== 'Approved' && (
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded ${item.status === 'Pending' ? 'text-yellow-500 bg-yellow-500/10' : 'text-red-500 bg-red-500/10'
+                          }`}>{t(item.status)}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
-                <p className="text-slate-400 text-sm line-clamp-2 mb-4 flex-1">{item.summary}</p>
+                  <h3 className={`text-lg font-semibold mb-2 transition-colors ${isTroubleshooting ? 'group-hover:text-amber-400' : 'group-hover:text-primary'}`}>{item.title}</h3>
+                  <p className="text-slate-400 text-sm line-clamp-2 mb-4 flex-1">{item.summary}</p>
                 {item.tags && item.tags.length > 0 && (
                   <div className="flex gap-1.5 flex-wrap mb-4 relative z-10">
                     {item.tags.map(tag => (
@@ -412,7 +435,8 @@ export default function KnowledgeBase() {
                 </div>
               )}
             </div>
-          ))
+          );
+        })
         )}
       </div>
 
@@ -495,7 +519,9 @@ export default function KnowledgeBase() {
                     <option value="SOP & Checklist">{t('SOP & Checklist')}</option>
                     <option value="Maintenance Logs">{t('Maintenance Logs')}</option>
                     <option value="Troubleshooting Cases">{t('Troubleshooting Cases')}</option>
-                    <option value="Lessons Learned">{t('Lessons Learned')}</option>
+                    {['SENIOR', 'MANAGER', 'ADMINISTRATOR', 'Senior Engineer', 'Project Manager', 'Administrator'].includes(user?.role) && (
+                      <option value="Lessons Learned">{t('Lessons Learned')}</option>
+                    )}
                     <option value="Training & Regulation">{t('Training & Regulation')}</option>
                   </select>
                 </div>

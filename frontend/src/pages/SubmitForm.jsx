@@ -174,6 +174,7 @@ export default function SubmitForm() {
   };
 
   const isPilot = false;
+  const isSeniorOrAbove = ['SENIOR', 'MANAGER', 'ADMINISTRATOR', 'Senior Engineer', 'Project Manager', 'Administrator'].includes(user?.role);
 
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4">
@@ -310,7 +311,7 @@ export default function SubmitForm() {
                   <option value="SOP & Checklist">{t('SOP & Checklist')}</option>
                   <option value="Maintenance Logs">{t('Maintenance Logs')}</option>
                   <option value="Troubleshooting Cases">{t('Troubleshooting Cases')}</option>
-                  <option value="Lessons Learned">{t('Lessons Learned')}</option>
+                  {isSeniorOrAbove && <option value="Lessons Learned">{t('Lessons Learned')}</option>}
                   <option value="Training & Regulation">{t('Training & Regulation')}</option>
                 </select>
               </div>
